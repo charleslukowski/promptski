@@ -38,11 +38,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login' # Redirect to 'login' view if user tries to access protected page
 # -------------------------------
 
-# Create or update database tables before handling first request
-@app.before_first_request
-def initialize_database():
-    db.create_all()
-
 # Load OpenAI API key from environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
 if not openai.api_key:
@@ -181,6 +176,10 @@ class PromptHistory(db.Model):
     def __repr__(self):
         return f'<PromptHistory {self.id} by User {self.user_id}>'
 # --------------------------
+
+# Create database tables if they don't exist (for /tmp SQLite on Vercel)
+with app.app_context():
+    db.create_all()
 
 # --- Flask-Login Setup ---
 @login_manager.user_loader
