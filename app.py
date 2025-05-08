@@ -36,10 +36,12 @@ app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
 db = SQLAlchemy(app, engine_options={"connect_args": {"check_same_thread": False}})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' # Redirect to 'login' view if user tries to access protected page
-# Automatically create database tables (for demo mode with /tmp SQLite)
-with app.app_context():
-    db.create_all()
 # -------------------------------
+
+# Create or update database tables before handling first request
+@app.before_first_request
+def initialize_database():
+    db.create_all()
 
 # Load OpenAI API key from environment variable
 openai.api_key = os.getenv("OPENAI_API_KEY")
