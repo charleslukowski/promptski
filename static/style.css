@@ -10,7 +10,7 @@ body {
 .container {
     max-width: 800px;
     margin: 30px auto;
-    padding: 25px 30px 30px 30px; /* Adjust padding slightly for border */
+    padding: 5px; /* Reduced padding to tighten container */
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -200,6 +200,7 @@ h2, h3 {
 .mb-4 {
     width: 100% !important;
     max-width: 100% !important;
+    margin-bottom: 0 !important;
 }
 
 .card-body form div {
@@ -247,16 +248,24 @@ h2, h3 {
 
 /* --- Enhanced Navbar --- */
 .navbar {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 1rem;
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
     font-weight: bold;
+    text-decoration: none;
 }
 
-.brand-text {
-    color: #dc143c; /* Polish red */
+.navbar-brand img {
+    max-height: 80px;
+    height: auto;
+}
+
+/* Navbar tagline under logo inside brand */
+.navbar-brand .tagline {
+    color: #666;
+    font-style: italic;
+    font-size: 0.875rem;
 }
 
 /* --- Loading Overlay --- */
@@ -373,4 +382,17 @@ footer {
 .toast-notification.show {
     opacity: 1;
     transform: translateY(0);
+}
+
+.character-image {
+    max-width: 200px;
+    height: auto;
+}
+
+.header-image-large {
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px;
 }

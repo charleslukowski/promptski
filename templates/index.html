@@ -2,11 +2,10 @@
 
 {% block content %}
 <div class="card main-card">
-    <div class="card-header">
-        <h1 class="text-center mb-0">Promptski <span class="polish-flair">🪄</span></h1>
-        <p class="tagline text-center">Make your prompt shine — with a little Polish flair.</p>
-    </div>
     <div class="card-body">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='promptski.png') }}" alt="Promptski Character" class="character-image">
+        </div>
 
         <form method="POST">
             <div class="mb-4">
