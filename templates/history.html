@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Prompt History</h1>
+
+    {% if history %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col" style="width: 15%;">Timestamp (UTC)</th>
+                        <th scope="col" style="width: 10%;">Use Case</th>
+                        <th scope="col" style="width: 25%;">Original Prompt</th>
+                        <th scope="col" style="width: 25%;">Polished Prompt</th>
+                        <th scope="col" style="width: 25%;">Explanation / Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in history %}
+                        <tr>
+                            <td style="font-size: 0.8rem;">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td style="font-size: 0.8rem;">{{ entry.use_case.capitalize() if entry.use_case else 'General' }}</td>
+                            <td style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.8rem;">{{ entry.raw_prompt }}</td>
+                            
+                            {% if entry.polished_prompt %}
+                                <td style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.8rem;">{{ entry.polished_prompt }}</td>
+                                <td style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.8rem;">{{ entry.explanation }}</td>
+                            {% elif entry.api_error %}
+                                <td style="font-size: 0.8rem;"></td> 
+                                <td class="text-danger" style="white-space: pre-wrap; word-wrap: break-word; font-size: 0.8rem;"><strong>API Error:</strong><br>{{ entry.api_error }}</td>
+                            {% else %}
+                                <td style="font-size: 0.8rem;"></td>
+                                <td class="text-muted" style="font-size: 0.8rem;"><em>(No polished prompt or error recorded)</em></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>You haven't polished any prompts yet.</p>
+    {% endif %}
+{% endblock %}

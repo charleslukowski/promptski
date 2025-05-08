@@ -1,0 +1,376 @@
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 25px 30px 30px 30px; /* Adjust padding slightly for border */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center; /* Center align container content */
+    border-top: 5px solid #DC143C; /* Polish red */
+    border-bottom: 5px solid #FFFFFF; /* White - may not be visible on white bg, adjust if needed or use border */
+    /* Alternative: border: 3px solid #DC143C; */
+}
+
+h1 {
+    color: #5a2d82; /* A playful purple */
+    margin-bottom: 5px;
+}
+
+.polish-flair {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.tagline {
+    color: #666;
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center form elements */
+    gap: 15px; /* Space between form elements */
+    width: 90%; /* Make form wider */
+    margin: 0 auto; /* Center the form */
+}
+
+label {
+    font-weight: bold;
+    align-self: flex-start; /* Align labels to the left */
+    margin-left: 0; /* Remove margin that was pushing label in */
+    width: 100%; /* Full width label */
+}
+
+textarea,
+select {
+    width: 100%; /* Make textarea/select take up container width */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.prompt-input {
+    width: 100%;
+    min-height: 150px; /* Make textarea taller */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #e83e8c; /* A vibrant pink */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d1367c;
+}
+
+.output-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+h2, h3 {
+    color: #5a2d82;
+}
+
+.result-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    text-align: left;
+    white-space: pre-wrap; /* Preserve whitespace and line breaks */
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.explanation-box {
+    background-color: #eef;
+}
+
+.copy-button {
+    background-color: #6c757d; /* A neutral gray */
+}
+
+.copy-button:hover {
+    background-color: #5a6268;
+}
+
+.polish-again-button {
+    background-color: #17a2b8; /* A teal color */
+}
+
+.polish-again-button:hover {
+    background-color: #138496;
+}
+
+.error-message {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red */
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+/* --- Forms --- */
+.form-container {
+    max-width: 450px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+}
+
+.form-check {
+    margin-bottom: 15px;
+}
+
+.form-check-label {
+    margin-left: 5px;
+}
+
+.invalid-feedback span {
+    color: #dc3545; /* Bootstrap danger color */
+    font-size: 0.875em;
+    display: block;
+    margin-top: 4px;
+}
+
+.form-switch {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+/* Stronger overrides for textarea width issues */
+.form-control.prompt-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.mb-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.card-body form div {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* --- Flash Messages (Alerts) --- */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: left;
+    border-left: 4px solid transparent;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    border-left-color: #17a2b8;
+}
+
+/* --- Enhanced Navbar --- */
+.navbar {
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.brand-text {
+    color: #dc143c; /* Polish red */
+}
+
+/* --- Loading Overlay --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.spinner-container p {
+    margin: 0;
+    font-weight: bold;
+    color: #5a2d82;
+}
+
+/* --- Polish Flag Style --- */
+.polish-flag {
+    margin-left: 5px;
+    display: inline-block;
+}
+
+/* --- Enhanced Footer --- */
+footer {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    font-size: 0.9rem;
+}
+
+/* --- Enhanced Card Style --- */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    border-top: 3px solid #DC143C; /* Polish red accent */
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.main-card {
+    width: 90%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- Responsive Improvements --- */
+@media (max-width: 768px) {
+    .container {
+        margin: 15px auto;
+        padding: 15px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    textarea, 
+    select {
+        width: 95%;
+    }
+    
+    label {
+        width: 95%;
+        margin-left: 2.5%;
+    }
+}
+
+/* --- Toast Notification --- */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}

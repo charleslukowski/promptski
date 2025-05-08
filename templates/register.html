@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="form-container">
+        <h2>Register New Account</h2>
+        <form method="POST" action="" novalidate> {# novalidate disables browser validation #}
+            {{ form.hidden_tag() }} {# CSRF token #}
+            
+            <div class="form-group">
+                {{ form.username.label(class="form-label") }}<br>
+                {{ form.username(class="form-control", size=32) }}
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}<br>
+                {{ form.password(class="form-control", size=32) }}
+                {% if form.password.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.confirm_password.label(class="form-label") }}<br>
+                {{ form.confirm_password(class="form-control", size=32) }}
+                {% if form.confirm_password.errors %}
+                    <div class="invalid-feedback">
+                        {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+        <p class="form-switch">
+            Already have an account? <a href="{{ url_for('login') }}">Log In</a>
+        </p>
+    </div>
+{% endblock %}

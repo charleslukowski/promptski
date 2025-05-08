@@ -1,0 +1,7 @@
+Flask
+openai
+python-dotenv # To manage environment variables like API keys
+waitress # Production WSGI server
+Flask-SQLAlchemy # Database ORM
+Flask-Login # User session management
+Flask-WTF # Web forms
