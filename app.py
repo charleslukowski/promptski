@@ -24,16 +24,16 @@ secret_key = os.getenv('SECRET_KEY')
 if not secret_key:
     raise RuntimeError("SECRET_KEY environment variable must be set for production")
 app.config['SECRET_KEY'] = secret_key
-# Use an absolute path for the database file to avoid CWD issues
-# Construct the full path: e.g., C:\path\to\project\promptski.db
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 
-    'sqlite:///' + os.path.join(basedir, 'promptski.db'))
+# Use SQLite in /tmp for demo deployments (Vercel readonly FS) by default
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
+    'sqlite:////tmp/promptski.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
 # -------------------
 
 # --- Extensions Initialization ---
-db = SQLAlchemy(app)
+# Enable SQLite file in /tmp with check_same_thread for demo
+db = SQLAlchemy(app, engine_options={"connect_args": {"check_same_thread": False}})
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' # Redirect to 'login' view if user tries to access protected page
 # -------------------------------
