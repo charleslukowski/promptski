@@ -5,3 +5,6 @@ waitress # Production WSGI server
 Flask-SQLAlchemy # Database ORM
 Flask-Login # User session management
 Flask-WTF # Web forms
+Werkzeug
+Flask-Session # Added for server-side sessions
+psycopg2-binary # PostgreSQL driver

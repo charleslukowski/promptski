@@ -1,16 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 import openai
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from datetime import date, datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session # Import Flask-Session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 
-load_dotenv() # Load environment variables from .env file
+# Load .env file only if it exists (for local development)
+if find_dotenv():
+    load_dotenv()
 
 app = Flask(__name__)
 
@@ -19,21 +22,48 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # SECRET_KEY is needed for session management and flash messages
-# IMPORTANT: Generate a strong, random key and store it in .env for production!
-secret_key = os.getenv('SECRET_KEY')
-if not secret_key:
-    raise RuntimeError("SECRET_KEY environment variable must be set for production")
-app.config['SECRET_KEY'] = secret_key
-# Use an absolute path for the database file to avoid CWD issues
-# Construct the full path: e.g., C:\path\to\project\promptski.db
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 
-    'sqlite:///' + os.path.join(basedir, 'promptski.db'))
+# Set directly from environment variable (Vercel will provide this)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+if not app.config['SECRET_KEY']:
+    print("ERROR: SECRET_KEY not found in environment variables!") # For Vercel logs
+    raise RuntimeError("SECRET_KEY environment variable must be set")
+
+# Get DATABASE_URL from environment (mandatory for deployment)
+database_url = os.getenv('DATABASE_URL')
+if not database_url:
+    print("ERROR: DATABASE_URL not found in environment variables!")
+    # Provide a local SQLite fallback *only* if DATABASE_URL is not set AT ALL
+    # This allows local testing without needing a full external DB setup
+    # BUT deployment requires DATABASE_URL to be set in Vercel/environment
+    local_db_path = 'sqlite:///' + os.path.join(basedir, 'promptski_local.db')
+    print(f"WARNING: Using local fallback database: {local_db_path}")
+    app.config['SQLALCHEMY_DATABASE_URI'] = local_db_path
+else:
+    # If DATABASE_URL starts with "postgres://", replace it with "postgresql://"
+    # which is needed by SQLAlchemy
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
+
+# Flask-Session Configuration (using SQLAlchemy backend)
+app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_PERMANENT'] = False # Optional: make sessions non-permanent
+app.config['SESSION_USE_SIGNER'] = True # Sign the session cookie (contains session ID)
+app.config['SESSION_SQLALCHEMY_TABLE'] = 'sessions' # Name of the sessions table
+
 # -------------------
 
 # --- Extensions Initialization ---
+# Initialize SQLAlchemy (no special options needed for PostgreSQL)
 db = SQLAlchemy(app)
+
+# Configure Flask-Session AFTER SQLAlchemy
+app.config['SESSION_SQLALCHEMY'] = db
+sess = Session(app) # Initialize Flask-Session
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' # Redirect to 'login' view if user tries to access protected page
 # -------------------------------
@@ -61,6 +91,7 @@ MODEL_NAME = 'gpt-4.1-nano-2025-04-14' # As specified by the user
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
+    print(f"DEBUG: INDEX route. current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # DEBUG
     polished_prompt = ""
     explanation = ""
     error_message = None # Initialize error message
@@ -148,7 +179,7 @@ def index():
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -176,6 +207,11 @@ class PromptHistory(db.Model):
     def __repr__(self):
         return f'<PromptHistory {self.id} by User {self.user_id}>'
 # --------------------------
+
+# Create database tables if they don't exist (for /tmp SQLite on Vercel)
+# This will now also create the 'sessions' table needed by Flask-Session
+with app.app_context():
+    db.create_all()
 
 # --- Flask-Login Setup ---
 @login_manager.user_loader
@@ -234,19 +270,32 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(f"DEBUG: LOGIN route (GET/POST). current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # Existing DEBUG
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember.data)
-            flash('Login successful!', 'success')
-            # Redirect to the page the user was trying to access, or index if none
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+        submitted_username = form.username.data
+        submitted_password = form.password.data
+        print(f"DEBUG: Login attempt for username: {submitted_username}") # DEBUG
+        user = User.query.filter_by(username=submitted_username).first()
+
+        if user:
+            print(f"DEBUG: User found: {user.username}") # DEBUG
+            if user.check_password(submitted_password):
+                print(f"DEBUG: Password check PASSED for {user.username}") # DEBUG
+                login_user(user, remember=form.remember.data)
+                flash('Login successful!', 'success')
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('index'))
+            else:
+                print(f"DEBUG: Password check FAILED for {user.username}") # DEBUG
+                flash('Login Unsuccessful. Please check username and password.', 'danger')
         else:
+            print(f"DEBUG: User NOT found for username: {submitted_username}") # DEBUG
             flash('Login Unsuccessful. Please check username and password.', 'danger')
+            
+    # If form validation fails or login fails, render login page again
     return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
