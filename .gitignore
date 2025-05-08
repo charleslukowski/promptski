@@ -24,3 +24,6 @@ Thumbs.db
 # Markdown files (ignore all except README)
 *.md
 !README.md
+
+# Allow committing example env file
+!.env.example

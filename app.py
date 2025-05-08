@@ -20,7 +20,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # SECRET_KEY is needed for session management and flash messages
 # IMPORTANT: Generate a strong, random key and store it in .env for production!
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'a-very-insecure-default-key-replace-me!')
+secret_key = os.getenv('SECRET_KEY')
+if not secret_key:
+    raise RuntimeError("SECRET_KEY environment variable must be set for production")
+app.config['SECRET_KEY'] = secret_key
 # Use an absolute path for the database file to avoid CWD issues
 # Construct the full path: e.g., C:\path\to\project\promptski.db
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 
@@ -41,7 +44,7 @@ if not openai.api_key:
     raise ValueError("OPENAI_API_KEY environment variable not set.")
 
 # --- Configuration ---
-SYSTEM_PROMPT = """You are a prompt consultant named Promptski. Improve the user’s prompt to make it more effective for a language model, based on clarity, specificity, and intended task.
+SYSTEM_PROMPT = """You are a prompt consultant named Promptski. Improve the user's prompt to make it more effective for a language model, based on clarity, specificity, and intended task.
  
 **IMPORTANT:** Your response MUST follow this exact format:
 1.  The improved prompt.

@@ -28,9 +28,17 @@ Promptski is a simple web application that helps users refine their prompts for 
     pip install -r requirements.txt
     ```
 4.  **Set up environment variables:**
-    Create a `.env` file in the root directory and add your OpenAI API key:
+    Copy the example file and update your secrets:
+    ```bash
+    copy .env.example .env   # Windows
+    # or on macOS/Linux:
+    cp .env.example .env
     ```
-    OPENAI_API_KEY='your_openai_api_key_here'
+    Open `.env` and fill in:
+    ```
+    SECRET_KEY=your-secret-key-here
+    OPENAI_API_KEY=your-openai-api-key-here
+    DATABASE_URL=sqlite:///promptski.db
     ```
 5.  **Run the Flask app:**
     ```bash
