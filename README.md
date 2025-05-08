@@ -54,5 +54,4 @@ Promptski is a simple web application that helps users refine their prompts for 
 
 *   **Backend:** Flask (Python)
 *   **Frontend:** HTML, CSS, basic JavaScript
-*   **LLM Integration:** OpenAI API (GPT-4-turbo planned)
-*   **Deployment:** (To be determined - e.g., Render, Railway, Fly.io)
+*   **LLM Integration:** OpenAI API ('gpt-4.1-nano-2025-04-14')
