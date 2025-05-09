@@ -28,9 +28,23 @@ if not app.config['SECRET_KEY']:
     print("ERROR: SECRET_KEY not found in environment variables!") # For Vercel logs
     raise RuntimeError("SECRET_KEY environment variable must be set")
 
-# Use SQLite in /tmp for demo deployments (Vercel readonly FS) by default
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
-    'sqlite:////tmp/promptski.db')
+# Get DATABASE_URL from environment (mandatory for deployment)
+database_url = os.getenv('DATABASE_URL')
+if not database_url:
+    print("ERROR: DATABASE_URL not found in environment variables!")
+    # Provide a local SQLite fallback *only* if DATABASE_URL is not set AT ALL
+    # This allows local testing without needing a full external DB setup
+    # BUT deployment requires DATABASE_URL to be set in Vercel/environment
+    local_db_path = 'sqlite:///' + os.path.join(basedir, 'promptski_local.db')
+    print(f"WARNING: Using local fallback database: {local_db_path}")
+    app.config['SQLALCHEMY_DATABASE_URI'] = local_db_path
+else:
+    # If DATABASE_URL starts with "postgres://", replace it with "postgresql://"
+    # which is needed by SQLAlchemy
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
 
@@ -43,8 +57,8 @@ app.config['SESSION_SQLALCHEMY_TABLE'] = 'sessions' # Name of the sessions table
 # -------------------
 
 # --- Extensions Initialization ---
-# Enable SQLite file in /tmp with check_same_thread for demo
-db = SQLAlchemy(app, engine_options={"connect_args": {"check_same_thread": False}})
+# Initialize SQLAlchemy (no special options needed for PostgreSQL)
+db = SQLAlchemy(app)
 
 # Configure Flask-Session AFTER SQLAlchemy
 app.config['SESSION_SQLALCHEMY'] = db
