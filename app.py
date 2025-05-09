@@ -61,6 +61,7 @@ MODEL_NAME = 'gpt-4.1-nano-2025-04-14' # As specified by the user
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
+    print(f"DEBUG: INDEX route. current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # DEBUG
     polished_prompt = ""
     explanation = ""
     error_message = None # Initialize error message
@@ -238,6 +239,7 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(f"DEBUG: LOGIN route. current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # DEBUG
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
