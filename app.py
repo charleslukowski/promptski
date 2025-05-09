@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 import openai
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from datetime import date, datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -10,7 +10,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 
-load_dotenv() # Load environment variables from .env file
+# Load .env file only if it exists (for local development)
+if find_dotenv():
+    load_dotenv()
 
 app = Flask(__name__)
 
@@ -19,11 +21,12 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # SECRET_KEY is needed for session management and flash messages
-# IMPORTANT: Generate a strong, random key and store it in .env for production!
-secret_key = os.getenv('SECRET_KEY')
-if not secret_key:
-    raise RuntimeError("SECRET_KEY environment variable must be set for production")
-app.config['SECRET_KEY'] = secret_key
+# Set directly from environment variable (Vercel will provide this)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+if not app.config['SECRET_KEY']:
+    print("ERROR: SECRET_KEY not found in environment variables!") # For Vercel logs
+    raise RuntimeError("SECRET_KEY environment variable must be set")
+
 # Use SQLite in /tmp for demo deployments (Vercel readonly FS) by default
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
     'sqlite:////tmp/promptski.db')
