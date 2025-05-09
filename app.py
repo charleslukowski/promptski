@@ -34,6 +34,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
 app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
 app.config['SESSION_COOKIE_SECURE'] = True # Vercel should always be HTTPS
+app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['SESSION_PROTECTION'] = "basic" # Try reducing session protection for Vercel
 # -------------------
 
 # --- Extensions Initialization ---
