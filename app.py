@@ -4,6 +4,7 @@ import openai
 from dotenv import load_dotenv, find_dotenv
 from datetime import date, datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
+from flask_session import Session # Import Flask-Session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
@@ -32,15 +33,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
     'sqlite:////tmp/promptski.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
-app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
-app.config['SESSION_COOKIE_SECURE'] = True # Vercel should always be HTTPS
-app.config['REMEMBER_COOKIE_SECURE'] = True
-app.config['SESSION_PROTECTION'] = "basic" # Try reducing session protection for Vercel
+
+# Flask-Session Configuration (using SQLAlchemy backend)
+app.config['SESSION_TYPE'] = 'sqlalchemy'
+app.config['SESSION_PERMANENT'] = False # Optional: make sessions non-permanent
+app.config['SESSION_USE_SIGNER'] = True # Sign the session cookie (contains session ID)
+app.config['SESSION_SQLALCHEMY_TABLE'] = 'sessions' # Name of the sessions table
+
 # -------------------
 
 # --- Extensions Initialization ---
 # Enable SQLite file in /tmp with check_same_thread for demo
 db = SQLAlchemy(app, engine_options={"connect_args": {"check_same_thread": False}})
+
+# Configure Flask-Session AFTER SQLAlchemy
+app.config['SESSION_SQLALCHEMY'] = db
+sess = Session(app) # Initialize Flask-Session
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login' # Redirect to 'login' view if user tries to access protected page
 # -------------------------------
@@ -186,6 +195,7 @@ class PromptHistory(db.Model):
 # --------------------------
 
 # Create database tables if they don't exist (for /tmp SQLite on Vercel)
+# This will now also create the 'sessions' table needed by Flask-Session
 with app.app_context():
     db.create_all()
 
