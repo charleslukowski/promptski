@@ -32,6 +32,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
     'sqlite:////tmp/promptski.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
+app.config['SESSION_COOKIE_SAMESITE'] = "Lax"
+app.config['SESSION_COOKIE_SECURE'] = True # Vercel should always be HTTPS
 # -------------------
 
 # --- Extensions Initialization ---
