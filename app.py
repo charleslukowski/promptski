@@ -256,20 +256,32 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print(f"DEBUG: LOGIN route. current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # DEBUG
+    print(f"DEBUG: LOGIN route (GET/POST). current_user: {current_user}, is_authenticated: {current_user.is_authenticated}") # Existing DEBUG
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember.data)
-            flash('Login successful!', 'success')
-            # Redirect to the page the user was trying to access, or index if none
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+        submitted_username = form.username.data
+        submitted_password = form.password.data
+        print(f"DEBUG: Login attempt for username: {submitted_username}") # DEBUG
+        user = User.query.filter_by(username=submitted_username).first()
+
+        if user:
+            print(f"DEBUG: User found: {user.username}") # DEBUG
+            if user.check_password(submitted_password):
+                print(f"DEBUG: Password check PASSED for {user.username}") # DEBUG
+                login_user(user, remember=form.remember.data)
+                flash('Login successful!', 'success')
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('index'))
+            else:
+                print(f"DEBUG: Password check FAILED for {user.username}") # DEBUG
+                flash('Login Unsuccessful. Please check username and password.', 'danger')
         else:
+            print(f"DEBUG: User NOT found for username: {submitted_username}") # DEBUG
             flash('Login Unsuccessful. Please check username and password.', 'danger')
+            
+    # If form validation fails or login fails, render login page again
     return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
