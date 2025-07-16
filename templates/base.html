@@ -114,12 +114,10 @@
             if (!document.getElementById('loading-overlay')) {
                 const overlay = document.createElement('div');
                 overlay.id = 'loading-overlay';
-                overlay.classList.add('loading-overlay');
+                overlay.style.display = 'none'; // Initially hidden
                 overlay.innerHTML = `
-                    <div class="spinner-container">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p>Working magic on your prompt...</p>
-                    </div>
+                    <div class="loading-spinner"></div>
+                    <p style="color: var(--text-dark); margin-top: 1rem; font-weight: 600;">Working magic on your prompt...</p>
                 `;
                 document.body.appendChild(overlay);
             }
@@ -130,10 +128,16 @@
                 form.addEventListener('submit', function() {
                     // Check if this form has a textarea with raw_prompt (our main form)
                     if (this.querySelector('#raw_prompt')) {
-                        toggleLoading(true);
+                        const rawPrompt = this.querySelector('#raw_prompt').value.trim();
+                        if (rawPrompt) {
+                            toggleLoading(true);
+                        }
                     }
                 });
             });
+            
+            // Hide loading overlay on page load (in case it was left visible)
+            toggleLoading(false);
         });
     </script>
 </body>
