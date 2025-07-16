@@ -48,6 +48,21 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROMPTS_PER_DAY'] = 5 # Max prompts per user per day
 
+# PostgreSQL connection pool configuration to handle timeouts
+if database_url and 'postgresql' in database_url:
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,  # Validate connections before use
+        'pool_recycle': 300,    # Recycle connections every 5 minutes
+        'pool_timeout': 20,     # Timeout for getting connection from pool
+        'max_overflow': 0,      # Don't allow overflow connections
+        'pool_size': 5,         # Number of connections to maintain
+        'connect_args': {
+            'sslmode': 'require',
+            'connect_timeout': 10,
+            'application_name': 'promptski_app'
+        }
+    }
+
 # Flask-Session Configuration (using SQLAlchemy backend)
 app.config['SESSION_TYPE'] = 'sqlalchemy'
 app.config['SESSION_PERMANENT'] = False # Optional: make sessions non-permanent
