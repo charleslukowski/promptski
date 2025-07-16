@@ -1,55 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card main-card">
-    <div class="card-body">
-        <div class="text-center mb-4">
-            <img src="{{ url_for('static', filename='promptski.png') }}" alt="Promptski Character" class="character-image">
-        </div>
-
-        <form method="POST">
-            <div class="mb-4">
-                <label for="raw_prompt" class="form-label">Enter your rough prompt:</label>
-                <textarea id="raw_prompt" name="raw_prompt" class="form-control prompt-input" rows="8" required>{{ request.form.get('raw_prompt', '') }}</textarea>
+<div class="main-container">
+    <div class="main-card">
+        <div class="polish-pattern"></div>
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='promptski.png') }}" alt="Promptski Character" class="character-image">
+                <h1 class="brand-title">Welcome to Promptski<span class="polish-flair">🇵🇱</span></h1>
+                <p class="tagline">Make your prompt shine — with a little Polish flair</p>
             </div>
 
-            <div class="mb-4">
-                <label for="use_case" class="form-label">Choose a style (optional):</label>
-                <select id="use_case" name="use_case" class="form-select">
-                    <option value="general">General</option>
-                    <option value="business" {% if request.form.get('use_case') == 'business' %}selected{% endif %}>Business</option>
-                    <option value="creative" {% if request.form.get('use_case') == 'creative' %}selected{% endif %}>Creative Writing</option>
-                    <option value="analysis" {% if request.form.get('use_case') == 'analysis' %}selected{% endif %}>Analysis</option>
-                </select>
-            </div>
+            <form method="POST">
+                <div class="mb-4">
+                    <label for="raw_prompt" class="form-label">Enter your rough prompt:</label>
+                    <textarea id="raw_prompt" name="raw_prompt" class="form-control prompt-input" rows="8" required placeholder="Type your rough prompt here... Don't worry about perfection, that's what we're here for! 🪄">{{ request.form.get('raw_prompt', '') }}</textarea>
+                </div>
 
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary btn-lg px-5 py-3"><i class="fas fa-magic me-2"></i>Polish it!</button>
-            </div>
+                <div class="mb-4">
+                    <label for="use_case" class="form-label">Choose a style (optional):</label>
+                    <select id="use_case" name="use_case" class="form-select">
+                        <option value="general">✨ General Polish</option>
+                        <option value="business" {% if request.form.get('use_case') == 'business' %}selected{% endif %}>💼 Business Professional</option>
+                        <option value="creative" {% if request.form.get('use_case') == 'creative' %}selected{% endif %}>🎨 Creative Writing</option>
+                        <option value="analysis" {% if request.form.get('use_case') == 'analysis' %}selected{% endif %}>📊 Analysis & Research</option>
+                    </select>
+                </div>
 
-        </form>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+                        <i class="fas fa-magic me-2"></i>Polish it!
+                    </button>
+                </div>
+            </form>
 
-        {% if polished_prompt %}
-        <div class="output-section mt-5">
-            <h2 class="text-center mb-4">✨ Polished Prompt ✨</h2>
+            {% if polished_prompt %}
+            <div class="output-section mt-5">
+                <h2 class="text-center mb-4">✨ Polished Prompt ✨</h2>
 
-            <input type="hidden" id="polished_prompt_text" value="{{ polished_prompt }}">
-            <div class="result-box" id="polished_prompt_output">
-                {{ polished_prompt }}
-            </div>
-            <div class="button-group mt-3">
-                <button class="btn btn-secondary copy-button" onclick="copyToClipboard('polished_prompt_output')"><i class="fas fa-copy me-2"></i>Copy</button>
-                <button class="btn btn-info polish-again-button" id="polish_again_button" onclick="polishAgain()"><i class="fas fa-redo me-2"></i>Polish Again</button>
-            </div>
+                <input type="hidden" id="polished_prompt_text" value="{{ polished_prompt }}">
+                <div class="result-box" id="polished_prompt_output">
+                    {{ polished_prompt }}
+                </div>
+                <div class="button-group mt-3">
+                    <button class="btn btn-secondary copy-button" onclick="copyToClipboard('polished_prompt_output')">
+                        <i class="fas fa-copy me-2"></i>Copy to Clipboard
+                    </button>
+                    <button class="btn btn-info polish-again-button" id="polish_again_button" onclick="polishAgain()">
+                        <i class="fas fa-redo me-2"></i>Polish Again
+                    </button>
+                </div>
 
-            {% if explanation %}
-            <h3 class="mt-4 mb-3">💡 Explanation</h3>
-            <div class="result-box explanation-box" id="explanation_output">
-                {{ explanation }}
+                {% if explanation %}
+                <h3 class="mt-4 mb-3">💡 Why We Made These Changes</h3>
+                <div class="result-box explanation-box" id="explanation_output">
+                    {{ explanation }}
+                </div>
+                {% endif %}
             </div>
             {% endif %}
         </div>
-        {% endif %}
+    </div>
+</div>
     </div>
 </div>
 
